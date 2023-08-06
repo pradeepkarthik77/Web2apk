@@ -1,0 +1,32 @@
+Parts to edit package name:
+
+1. MainAcitivty.java
+
+2. java/com/example/<packageName>
+
+3. Change the applicationId and namespace in build.gradle file.
+
+4. Do Gradle Sync
+
+5. Change icon and Name of the app also.
+
+6. ./gradlew clean
+7. ./gradlew assembleDebug
+
+Ippo enna panradhu?:
+
+Write a NodeJS program to get the values of Image,AppName and link through app.post method and write a API to replace the packagename and file,imagenames in the project and create the app for the project. 
+
+On the above part completion, the program returns the created APK back to the frontend.
+
+
+Todo to change ChatGPT app to any app:
+
+-> Edit the AppName in the String variable
+-> Change the Image in the drawable folder
+-> Change the packagename in the MainActivity.java file
+-> Change packagename in build.gradle file
+-> Change the folder name of java/com/example/<appname>
+-> Run the above 2 command in CLI
+
+And proceed to send the built APK to the frontend.
