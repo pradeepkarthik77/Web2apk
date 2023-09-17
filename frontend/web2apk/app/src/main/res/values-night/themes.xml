@@ -3,5 +3,15 @@
     <style name="Base.Theme.Web2apk" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="android:textColorPrimary">@color/cardview_dark_background</item>
+        <item name="colorPrimary">#428DFF</item> <!--#0CD354  #0da955 #0cc750/-->
+        <item name="colorPrimaryVariant">#10579F</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
     </style>
 </resources>
