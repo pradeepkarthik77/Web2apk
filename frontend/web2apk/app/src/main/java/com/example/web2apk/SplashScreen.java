@@ -38,7 +38,7 @@ public class SplashScreen extends AppCompatActivity
         ForegroundColorSpan redColorSpan = new ForegroundColorSpan(Color.BLACK);
         builder.setSpan(redColorSpan, 0, part1.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
-        int color = Color.parseColor("#428DFF");
+        int color = Color.parseColor("#FFFFFF");
 
         ForegroundColorSpan blueColorSpan = new ForegroundColorSpan(color);
         builder.setSpan(blueColorSpan, part1.length(), part1.length()+part2.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -65,6 +65,6 @@ public class SplashScreen extends AppCompatActivity
             }
             startActivity(mainIntent);
             finish();
-        }, 2500);
+        }, 0); //2500
     }
 }

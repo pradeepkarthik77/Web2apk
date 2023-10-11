@@ -30,6 +30,7 @@ android {
 
 dependencies {
     implementation ("com.airbnb.android:lottie:6.1.0")
+    implementation ("com.github.pavlospt:roundedletterview:1.3")
     implementation ("me.relex:circleindicator:2.1.6")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")

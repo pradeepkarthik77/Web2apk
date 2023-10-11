@@ -26,6 +26,8 @@
 
         <activity android:name=".User_OnBoard"></activity>
 
+        <activity android:name=".AddNewApp"/>
+
     </application>
 
 </manifest>
