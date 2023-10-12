@@ -2,6 +2,7 @@ package com.example.web2apk;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -50,6 +51,29 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(context, AddNewApp.class);
                 startActivity(intent);
+            }
+        });
+
+        NestedScrollView nestedScrollView = findViewById(R.id.nested_scrollview);
+
+        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // the delay of the extension of the FAB is set for 12 items
+                if (scrollY > oldScrollY + 12 && fab.isExtended()) {
+                    fab.shrink();
+                }
+
+                // the delay of the extension of the FAB is set for 12 items
+                if (scrollY < oldScrollY - 12 && !fab.isExtended()) {
+                    fab.extend();
+                }
+
+                // if the nestedScrollView is at the first item of the list then the
+                // extended floating action should be in extended state
+                if (scrollY == 0) {
+                    fab.extend();
+                }
             }
         });
 

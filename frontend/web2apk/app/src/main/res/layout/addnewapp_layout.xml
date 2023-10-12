@@ -19,6 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:src="@drawable/back_btn"
+        android:clickable="true"
         android:background="?selectableItemBackgroundBorderless"
         />
 

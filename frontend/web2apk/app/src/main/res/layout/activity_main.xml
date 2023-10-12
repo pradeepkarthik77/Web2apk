@@ -1,85 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/drawer_layout"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools = "http://schemas.android.com/tools"
-        >
 
-        <com.google.android.material.appbar.AppBarLayout
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/drawer_layout"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
-
-            <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:contentScrim="@color/default_color"
-                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-                >
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <!--Content inside the constraintlayout-->
-
-                    <fragment
-                        android:id="@+id/home_fragment"
-                        android:name="com.example.web2apk.home_fragment"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <include layout="@layout/home_fragment_toolbar" />
-
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            app:contentScrim="@color/default_color"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
+                android:layout_height="wrap_content">
 
-                <LinearLayout
+                <fragment
+                    android:id="@+id/home_fragment"
+                    android:name="com.example.web2apk.home_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/log_linear"
-                    android:orientation="vertical"
-                    app:layout_constraintTop_toTopOf="parent"
-                    >
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/main_recycler"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clipToPadding="false"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="10dp"
-                        android:overScrollMode="never"
-                        />
-                </LinearLayout>
-
-                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                    android:id="@+id/new_app_fab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="New App"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_behavior="com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton$ExtendedFloatingActionButtonBehavior" />
+                    app:layout_constraintTop_toTopOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.core.widget.NestedScrollView>
+            <include layout="@layout/home_fragment_toolbar"/>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nested_scrollview"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/log_linear"
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    app:cardElevation="4dp"
+                    android:id="@+id/no_record_info"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:backgroundTint="#FEB4AB"
+                    app:cardCornerRadius="20dp"
+                    android:padding="10dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No Apps Found.\nCreate a New App by clicking on 'Create App'."
+                        android:gravity="center"
+                        android:textSize="15sp"
+                        android:textColor="#9B181E"
+                        android:layout_gravity="center"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/main_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:overScrollMode="never"/>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/new_app_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create App"
+        app:icon="@drawable/add_icon"
+        app:iconTint="@color/dark_blue"
+        android:textColor="@color/dark_blue"
+        android:backgroundTint="#AAD5FF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_behavior="com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton$ExtendedFloatingActionButtonBehavior"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

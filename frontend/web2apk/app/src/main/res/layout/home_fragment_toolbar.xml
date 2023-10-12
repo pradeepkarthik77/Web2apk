@@ -31,6 +31,15 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:id="@+id/search_apps"
+            android:src="@drawable/search_icon"
+            android:layout_marginRight="10dp"
+            android:background="?selectableItemBackgroundBorderless"
+            />
+
     </LinearLayout>
 
 </androidx.appcompat.widget.Toolbar>
