@@ -15,7 +15,7 @@ Parts to edit package name:
 
 Ippo enna panradhu?:
 
-Write a NodeJS program to get the values of Image,AppName and link through app.post method and write a API to replace the packagename and file,imagenames in the project and create the app for the project. 
+Write a NodeJS program to get the values of Imag,AppName and link through app.post method and write a API to replace the packagename and file,imagenames in the project and create the app for the project. 
 
 On the above part completion, the program returns the created APK back to the frontend.
 

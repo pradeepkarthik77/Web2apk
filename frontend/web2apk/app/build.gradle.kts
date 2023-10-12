@@ -12,7 +12,6 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -27,9 +26,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
-
 dependencies {
+    implementation ("com.github.skydoves:colorpickerview:2.3.0")
     implementation ("com.airbnb.android:lottie:6.1.0")
+    implementation ("com.github.yalantis:ucrop:2.2.6")
     implementation ("com.github.pavlospt:roundedletterview:1.3")
     implementation ("me.relex:circleindicator:2.1.6")
     implementation("androidx.appcompat:appcompat:1.6.1")
