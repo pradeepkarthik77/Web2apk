@@ -14,5 +14,4 @@ public interface RetrofitInterface
 
     @POST("/create_app")
         Call<Void> executeCreate(@Body HashMap<String,String> map);
-
 }

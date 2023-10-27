@@ -3,10 +3,20 @@ const app = express()
 
 app.use(express.json())
 
-app.post("/home",(req,res)=>{
+app.post("/create_app",(req,res)=>{
     
     const appname = req.body.appname;
-    const weblink = req.body.weblink;
+    const weblink = req.body.applink;
+    const appcolor = req.body.appcolor;
+    const permission = req.body.permission;
+    const webCache = req.body.webCache;
+    const appicon = req.body.appicon;
+
+    console.log("received create_app");
+
+    console.log(appicon);
+
+    res.status(200).send();
     // const Img_Path = //get the Path for the image stored using multer
 
 })

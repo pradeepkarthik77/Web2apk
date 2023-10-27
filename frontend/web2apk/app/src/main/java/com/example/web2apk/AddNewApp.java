@@ -509,7 +509,8 @@ public class AddNewApp extends AppCompatActivity
 
                                 @Override
                                 public void onFailure(Call<Void> call, Throwable t) {
-                                    Toast.makeText(context,"Unable to Create App.Check Your Internet Connection And Try Again.",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context,t.toString(),Toast.LENGTH_LONG).show();
+                                    //"Unable to Create App.Check Your Internet Connection And Try Again."
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {

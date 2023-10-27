@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">web2apk</string>
-    <string name="BASE_URL">http://192.168.131.144:3000</string>
+    <string name="BASE_URL">http://192.168.163.144:5000</string>
 </resources>
