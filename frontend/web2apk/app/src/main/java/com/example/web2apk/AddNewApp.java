@@ -18,9 +18,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -38,15 +40,22 @@ import com.github.pavlospt.roundedletterview.RoundedLetterView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.skydoves.colorpickerview.ColorEnvelope;
-import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.ColorPickerView;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
-import com.skydoves.colorpickerview.listeners.ColorListener;
 import com.yalantis.ucrop.UCrop;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AddNewApp extends AppCompatActivity
 {
@@ -58,7 +67,11 @@ public class AddNewApp extends AppCompatActivity
 
     MaterialButton colorPicker;
 
+    private AlertDialog progressDialog;
+
     private MaterialButton pickimg_btn;
+
+    private boolean hasSelectedImage = false;
 
     View color_show;
 
@@ -67,7 +80,31 @@ public class AddNewApp extends AppCompatActivity
     private int REQUEST_CODE_PICK_IMAGE = 1234;
     private int STORAGE_PERMISSION_CODE = 4321;
 
+    private MaterialButton create_app_btn;
+
+    private Bitmap globalBitmap;
+
+    private Bitmap defaultCircularBitmap;
+
+    CheckBox camera;
+    CheckBox location;
+    CheckBox file_sys;
+    CheckBox bluetooth;
+
+    CheckBox webcache;
+
     Context context;
+
+    public void showspinner()
+    {
+        progressDialog.show();
+    }
+
+    public void hidespinner()
+    {
+        progressDialog.dismiss();
+    }
+
 
     public Bitmap getBitmapFromView(View view) {
         Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
@@ -153,6 +190,8 @@ public class AddNewApp extends AppCompatActivity
                 imageView.setImageBitmap(circularBitmap); // Assuming you have an ImageView to display the result
                 TextView defaulttext = findViewById(R.id.default_text);
                 defaulttext.setText("Selected:");
+                hasSelectedImage = true;
+                this.globalBitmap = circularBitmap;
                 imageView.setVisibility(View.VISIBLE);
                 roundedLetterView.setVisibility(View.INVISIBLE);
             } catch (IOException e) {
@@ -184,6 +223,21 @@ public class AddNewApp extends AppCompatActivity
         }
     }
 
+    public static boolean isHexCode(String hexCode) {
+        if (hexCode.length() < 2 || hexCode.charAt(0) != '#') {
+            return false;
+        }
+
+        for (int i = 1; i < hexCode.length(); i++) {
+            if (!Character.isDigit(hexCode.charAt(i)) &&
+                    !Character.isAlphabetic(hexCode.charAt(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public void showColorPickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
@@ -208,12 +262,47 @@ public class AddNewApp extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int which) {
                         // Handle the color selection or the OK action here
                         String selectedHex = hexCodeEditText.getText().toString();
+                        if(isHexCode(selectedHex)) {
                             color_show.setBackgroundColor(Color.parseColor(selectedHex));
                             color_text.setText(selectedHex);
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    public boolean validate_input(String appname,String website,String hexCode,String permission,String webCache)
+    {
+        boolean boole = true;
+
+        if(appname.length() < 3)
+        {
+            appname_input.setError("AppName should contain more than 3 characters");
+            boole = false;
+        }
+        else{
+            appname_input.setError(null);
+        }
+
+        try {
+            new URL(website).toURI();
+            applink_input.setError(null);
+        } catch (Exception e) {
+            applink_input.setError("Enter a Valid Website Link. Like: http://example.com");
+            boole = false;
+        }
+
+        return boole;
+    }
+
+    public String BitMapToString(Bitmap userImage1)
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        userImage1.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String Document_img1 = Base64.encodeToString(b, Base64.DEFAULT);
+        return Document_img1;
     }
 
     @Override
@@ -237,7 +326,21 @@ public class AddNewApp extends AppCompatActivity
 
         color_text = findViewById(R.id.color_hexcode);
 
-        this.context  = context;
+        create_app_btn = findViewById(R.id.create_app_btn);
+
+        camera = findViewById(R.id.camera_access);
+        location = findViewById(R.id.location_access);
+        file_sys = findViewById(R.id.file_access);
+        bluetooth = findViewById(R.id.bluetooth_access);
+        webcache = findViewById(R.id.cache_check);
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(R.layout.loading_layout);
+        builder.setCancelable(false); // prevent users from canceling the dialog
+        progressDialog = builder.create();
+
+        this.context  = this;
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -272,6 +375,7 @@ public class AddNewApp extends AppCompatActivity
 
                 if(roundedLetterView.getWidth() > 0 && roundedLetterView.getHeight() > 0) {
                     Bitmap bitmap = getBitmapFromView(roundedLetterView);
+                    defaultCircularBitmap = bitmap;
                 }
                 else{
                 }
@@ -291,5 +395,136 @@ public class AddNewApp extends AppCompatActivity
                 showColorPickerDialog();
             }
         });
+
+
+        create_app_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String appname = appname_input.getEditText().getText().toString();
+                String website = applink_input.getEditText().getText().toString();
+                String hexCode = color_text.getText().toString();
+
+
+                String permission = "";
+
+                if(camera.isChecked())
+                {
+                    permission+="1";
+                }
+                else{
+                    permission+="0";
+                }
+
+                if(location.isChecked())
+                {
+                    permission+="1";
+                }
+                else{
+                    permission+="0";
+                }
+
+                if(file_sys.isChecked())
+                {
+                    permission+="1";
+                }
+                else {
+                    permission+="0";
+                }
+
+                if(bluetooth.isChecked())
+                {
+                    permission+="1";
+                }
+                else {
+                    permission+="0";
+                }
+
+                String webCache = "";
+
+                if(webcache.isChecked())
+                {
+                    webCache+="1";
+                }
+                else{
+                    webCache+="0";
+                }
+
+                if(validate_input(appname,website,hexCode,permission,webCache))
+                {
+                    Retrofit retrofit = new Retrofit.Builder().baseUrl(getString(R.string.BASE_URL)).addConverterFactory(GsonConverterFactory.create()).build();
+
+                    RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
+
+                    HashMap<String,String> map = new HashMap<>();
+
+                    map.put("appname",appname);
+                    map.put("applink",website);
+                    map.put("appcolor",hexCode);
+                    map.put("permission",permission);
+                    map.put("webCache",webCache);
+
+                    Bitmap bitmapp;
+
+                    if(hasSelectedImage)
+                    {
+                        bitmapp = globalBitmap;
+                    }
+                    else{
+                        bitmapp = defaultCircularBitmap;
+                    }
+
+                    String bitmapbase = BitMapToString(bitmapp);
+
+                    map.put("appicon",bitmapbase);
+
+                    class longthread extends Thread
+                    {
+                        @Override
+                        public void run() {
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showspinner();
+                                }
+                            });
+
+                            Call<Void> call = retrofitInterface.executeCreate(map);
+
+                            call.enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response)
+                                {
+                                    if(response.code() == 200) {
+                                        Toast.makeText(context, "App Created Successfully!!!", Toast.LENGTH_LONG).show();
+                                    }
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            hidespinner();
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    Toast.makeText(context,"Unable to Create App.Check Your Internet Connection And Try Again.",Toast.LENGTH_LONG).show();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            hidespinner();
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+
+                    new longthread().start();
+                }
+            }
+        });
+
     }
 }

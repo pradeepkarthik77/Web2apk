@@ -30,6 +30,8 @@ dependencies {
     implementation ("com.github.skydoves:colorpickerview:2.3.0")
     implementation ("com.airbnb.android:lottie:6.1.0")
     implementation ("com.github.yalantis:ucrop:2.2.6")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.github.pavlospt:roundedletterview:1.3")
     implementation ("me.relex:circleindicator:2.1.6")
     implementation("androidx.appcompat:appcompat:1.6.1")
