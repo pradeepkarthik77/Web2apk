@@ -8,8 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.airbnb.lottie.LottieAnimationView;
-
 public class home_fragment extends Fragment {
 
     // Default constructor
@@ -45,7 +43,5 @@ public class home_fragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         // Initialize views here if needed
 
-        LottieAnimationView lottieAnimationView = view.findViewById(R.id.home_animation);
-        lottieAnimationView.setAnimation(R.raw.home_anim);
     }
 }

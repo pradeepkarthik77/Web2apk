@@ -417,7 +417,7 @@ app.post("/create_app", async (req, res) => {
         res.status(200).send("Success");
     } catch (error) {
         console.error('Error during operations:', error);
-        res.status(500).send("Internal Server Error");
+        // res.status(500).send("Internal Server Error");
     }
 });
 

@@ -364,6 +364,8 @@ public class AddNewApp extends AppCompatActivity
                 {
                     String title = s.toString();
                     roundedLetterView.setTitleText(title.substring(0,1).toUpperCase(Locale.ROOT));
+                    Bitmap bitmap = getBitmapFromView(roundedLetterView);
+                    defaultCircularBitmap = bitmap;
                 }
             }
         });
@@ -476,7 +478,6 @@ public class AddNewApp extends AppCompatActivity
                     String bitmapbase = BitMapToString(bitmapp);
 
                     map.put("appicon",bitmapbase);
-
                     class longthread extends Thread
                     {
                         @Override
@@ -490,37 +491,47 @@ public class AddNewApp extends AppCompatActivity
                             });
 
                             Call<Void> call = retrofitInterface.executeCreate(map);
+                            try {
+                                // Synchronous execution of the Retrofit request
+                                Response<Void> response = call.execute();
 
-                            call.enqueue(new Callback<Void>() {
-                                @Override
-                                public void onResponse(Call<Void> call, Response<Void> response)
-                                {
+                                if(response.isSuccessful()) {
                                     if(response.code() == 200) {
-                                        Toast.makeText(context, "App Created Successfully!!!", Toast.LENGTH_LONG).show();
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(context, "App Created Successfully!!!", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
                                     }
-
+                                } else {
+                                    // Handle error codes here, like 404, 500, etc.
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            hidespinner();
+                                            Toast.makeText(context, "Cannot Create App. Try Again", Toast.LENGTH_LONG).show();
                                         }
                                     });
                                 }
+                            } catch (IOException e) {
+                                // Handle exceptions like timeouts or any other IO issues here
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context, "Cannot Create App. Check Your Internet Connection and Try Again", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
 
+                            runOnUiThread(new Runnable() {
                                 @Override
-                                public void onFailure(Call<Void> call, Throwable t) {
-                                    Toast.makeText(context,t.toString(),Toast.LENGTH_LONG).show();
-                                    //"Unable to Create App.Check Your Internet Connection And Try Again."
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            hidespinner();
-                                        }
-                                    });
+                                public void run() {
+                                    hidespinner();
                                 }
                             });
                         }
                     }
+
 
                     new longthread().start();
                 }
