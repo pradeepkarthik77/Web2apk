@@ -1,10 +1,19 @@
 const express = require('express');
+const axios = require('axios');
 const fs = require('fs');
+const secrets = require('./config.json');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { execSync } = require('child_process');
+const { Octokit } = require('@octokit/rest');
+const MongoClient = require('mongodb').MongoClient
 
 const app = express();
+
+const url = secrets.mongo_local ;  
+const client = new MongoClient(url);
+const database = client.db("web2apk");
+const ApkList = database.collection("AppList");
 
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -18,12 +27,49 @@ const projectPath = "/home/pradeep/AndroidStudioProjects/webviewapk";
 const manifest_file_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/src/main/AndroidManifest.xml";
 const strings_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/src/main/res/values/strings.xml";
 const colors_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/src/main/res/values/colors.xml";
+// const apk_files_store = "/home/pradeep/Downloads/Web2APK_collection"
+const apk_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/build/outputs/apk/debug/app-debug.apk"
+
+async function makeRequest(config) {
+    try {
+        const response = await axios(config);
+        console.log(JSON.stringify(response.data));
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 
 async function replaceFirstLineAsync(filename, newFirstLine) {
     const data = await fs.promises.readFile(filename, 'utf8');
     const lines = data.split('\n');
     lines[0] = newFirstLine;
     await fs.promises.writeFile(filename, lines.join('\n'), 'utf8');
+}
+
+  async function uploadFileApi(appname) {
+
+    const file = fs.readFileSync(apk_path);
+
+    const token = secrets.github_token;
+
+    const data = {
+        message: "Upload APK files",
+        content: file.toString('base64'),
+        encoding: 'base64', // Specify encoding as base64 for binary files
+    };
+
+    const config = {
+        method: 'put',
+        url: `https://api.github.com/repos/pradeepkarthik77/Web2APK_collection/contents/${appname}.apk`,
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        data: data,
+    };
+
+    await makeRequest(config);
 }
 
 app.post("/create_app", async (req, res) => {
@@ -37,6 +83,15 @@ app.post("/create_app", async (req, res) => {
 
         console.log("received create_app");
         console.log(appname, weblink, appcolor, permission, webCache);
+
+
+        const result = await ApkList.findOne({appname: appname})
+
+        if(result != null)
+        {
+            res.status(401).send();
+            return;
+        }
 
         const buffer = Buffer.from(appicon, 'base64');
         await fs.promises.writeFile(appicon_path, buffer);
@@ -413,6 +468,16 @@ app.post("/create_app", async (req, res) => {
         const output = execSync(cmd);
         console.log(output.toString());
         console.log('Gradle sync completed.');
+
+        await uploadFileApi(appname);
+
+        let objecttoupdate = {}
+
+        objecttoupdate.appname = appname;
+        objecttoupdate.applink = weblink;
+        objecttoupdate.apklink = `https://github.com/pradeepkarthik77/Web2APK_collection/blob/main/${appname}.apk`;
+
+        const result2 = await ApkList.insertOne(objecttoupdate);
 
         res.status(200).send("Success");
     } catch (error) {
