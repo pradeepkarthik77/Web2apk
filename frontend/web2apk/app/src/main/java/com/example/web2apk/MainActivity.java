@@ -16,10 +16,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
     private BroadcastReceiver receiver;
 
+    private ImageButton home_btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.context = this;
         this.no_apps = findViewById(R.id.log_linear);
+        this.home_btn = findViewById(R.id.open_home);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         Spannable wordtoSpan = new SpannableString("Web2APK");
@@ -95,6 +100,15 @@ public class MainActivity extends AppCompatActivity {
                 if (scrollY == 0) {
                     fab.extend();
                 }
+            }
+        });
+
+        this.home_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "https://pradeepkarthik77.github.io/Web2APK_collection/";
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
             }
         });
 

@@ -31,12 +31,13 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <ImageView
+        <ImageButton
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:id="@+id/search_apps"
-            android:src="@drawable/search_icon"
+            android:id="@+id/open_home"
+            android:src="@drawable/open_in_new"
             android:layout_marginRight="10dp"
+            android:clickable="true"
             android:background="?selectableItemBackgroundBorderless"
             />
 
