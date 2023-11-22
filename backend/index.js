@@ -71,9 +71,13 @@ async function replaceFirstLineAsync(filename, newFirstLine) {
 
     await makeRequest(config);
 }
-
+    
 app.post("/create_app", async (req, res) => {
     try {
+
+        res.status(200).send({apklink: `https://github.com/pradeepkarthik77/Web2APK_collection/blob/main/bard.apk`});
+        return;
+
         const appname = req.body.appname.trim();
         const weblink = req.body.applink;
         const appcolor = req.body.appcolor;
@@ -479,7 +483,7 @@ app.post("/create_app", async (req, res) => {
 
         const result2 = await ApkList.insertOne(objecttoupdate);
 
-        res.status(200).send("Success");
+        res.status(200).send({apklink: objecttoupdate.apklink });
     } catch (error) {
         console.error('Error during operations:', error);
         // res.status(500).send("Internal Server Error");

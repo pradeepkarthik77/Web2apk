@@ -50,7 +50,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -453,7 +455,17 @@ public class AddNewApp extends AppCompatActivity
 
                 if(validate_input(appname,website,hexCode,permission,webCache))
                 {
-                    Retrofit retrofit = new Retrofit.Builder().baseUrl(getString(R.string.BASE_URL)).addConverterFactory(GsonConverterFactory.create()).build();
+                    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                            .connectTimeout(120, TimeUnit.SECONDS)
+                            .readTimeout(120, TimeUnit.SECONDS)
+                            .writeTimeout(120, TimeUnit.SECONDS)
+                            .build();
+
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(getString(R.string.BASE_URL))
+                            .client(okHttpClient)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
 
                     RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
 
@@ -490,28 +502,49 @@ public class AddNewApp extends AppCompatActivity
                                 }
                             });
 
-                            Call<Void> call = retrofitInterface.executeCreate(map);
+                            Call<ApkResponse> call = retrofitInterface.executeCreate(map);
                             try {
                                 // Synchronous execution of the Retrofit request
-                                Response<Void> response = call.execute();
+                                Response<ApkResponse> response = call.execute();
 
-                                if(response.isSuccessful()) {
-                                    if(response.code() == 200) {
+                                if (response.isSuccessful()) {
+                                    if (response.code() == 200) {
+                                        String apkLink = "";
+
+                                        ApkResponse apkResponse = response.body();
+
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
                                                 Toast.makeText(context, "App Created Successfully!!!", Toast.LENGTH_LONG).show();
+
+                                                Intent intent = new Intent(context, QRCodeActivity.class);
+                                                intent.putExtra("APK_LINK", apkResponse.getAPK());
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                startActivity(intent);
+                                                finish();
                                             }
                                         });
                                     }
                                 } else {
-                                    // Handle error codes here, like 404, 500, etc.
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(context, "Cannot Create App. Try Again", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
+                                    if(response.code() == 401)
+                                    {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(context, "An App already exist with that name. Try another AppName to avoid conflicts", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        // Handle error codes here, like 404, 500, etc.
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(context, "Cannot Create App. Try Again", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
                                 }
                             } catch (IOException e) {
                                 // Handle exceptions like timeouts or any other IO issues here
@@ -531,7 +564,6 @@ public class AddNewApp extends AppCompatActivity
                             });
                         }
                     }
-
 
                     new longthread().start();
                 }

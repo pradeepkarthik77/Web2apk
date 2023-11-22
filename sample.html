@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APK Files</title>
+</head>
+<body>
+    <h1>APK Files</h1>
+    <ul id="apkList"></ul>
+
+    <script>
+        const repoOwner = 'pradeepkarthik77';
+        const repoName = 'Web2APK_collection';
+        const path = ''; // The path to your APK files
+
+        fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`)
+            .then(response => response.json())
+            .then(data => {
+                const apkList = document.getElementById('apkList');
+
+                data.forEach(file => {
+                    if (file.type === 'file' && file.name.endsWith('.apk')) {
+                        const listItem = document.createElement('li');
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${file.path}`;
+                        downloadLink.textContent = file.name;
+
+                        listItem.appendChild(downloadLink);
+                        apkList.appendChild(listItem);
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching file information:', error));
+    </script>
+</body>
+</html>

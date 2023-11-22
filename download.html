@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download APK</title>
+</head>
+<body>
+
+<button onclick="downloadFile()">Download APK</button>
+
+<script>
+    function downloadFile() {
+        var fileUrl = 'https://raw.githubusercontent.com/pradeepkarthik77/Web2APK_collection/main/app-debug.apk';
+
+        var a = document.createElement('a');
+        a.href = fileUrl;
+        a.download = 'app-debug.apk';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+</script>
+
+</body>
+</html>
