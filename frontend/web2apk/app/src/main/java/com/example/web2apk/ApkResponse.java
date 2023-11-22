@@ -4,9 +4,10 @@ public class ApkResponse
 {
     private String apklink;
 
-    public void setAPK(String apk)
-    {
-        this.apklink = apk;
+    private String appname;
+
+    public String getAppName(){
+        return this.appname;
     }
 
     public String getAPK()

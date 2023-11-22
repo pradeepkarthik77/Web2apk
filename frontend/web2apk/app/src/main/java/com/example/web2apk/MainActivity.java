@@ -2,18 +2,27 @@ package com.example.web2apk;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
@@ -21,17 +30,37 @@ public class MainActivity extends AppCompatActivity {
 
     private Context context;
 
+    private RecyclerView recyclerView;
+
+    private LinearLayout no_apps;
+
+    private CardAdapter cardAdapter;
+
+    private BroadcastReceiver receiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         this.context = this;
+        this.no_apps = findViewById(R.id.log_linear);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         Spannable wordtoSpan = new SpannableString("Web2APK");
         TextView toolbar_title = toolbar.findViewById(R.id.tool_title);
         toolbar_title.setText(wordtoSpan);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("DbState",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        if(!sharedPreferences.getBoolean("isCreated",false))
+        {
+            DBHandler dbHandler = new DBHandler(getApplicationContext());
+            dbHandler.createDB();
+            editor.putBoolean("isCreated",true);
+            editor.commit();
+        }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -55,23 +84,62 @@ public class MainActivity extends AppCompatActivity {
         nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                // the delay of the extension of the FAB is set for 12 items
                 if (scrollY > oldScrollY + 12 && fab.isExtended()) {
                     fab.shrink();
                 }
 
-                // the delay of the extension of the FAB is set for 12 items
                 if (scrollY < oldScrollY - 12 && !fab.isExtended()) {
                     fab.extend();
                 }
 
-                // if the nestedScrollView is at the first item of the list then the
-                // extended floating action should be in extended state
                 if (scrollY == 0) {
                     fab.extend();
                 }
             }
         });
 
+        this.recyclerView = findViewById(R.id.main_recycler);
+        this.cardAdapter = new CardAdapter(this);
+        this.recyclerView.setLayoutManager(new GridLayoutManager(this,1));
+        this.recyclerView.setAdapter(cardAdapter);
+
+        // Check if the RecyclerView has no elements
+        if (recyclerView.getAdapter() != null && recyclerView.getAdapter().getItemCount() == 0) {
+            this.no_apps.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            this.no_apps.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+
+        // Register the LocalBroadcastReceiver
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // Refresh your RecyclerView here
+                cardAdapter = new CardAdapter(context);
+                recyclerView.setAdapter(cardAdapter);
+                cardAdapter.notifyDataSetChanged();
+                // Check if the RecyclerView has no elements
+                if (recyclerView.getAdapter() != null && recyclerView.getAdapter().getItemCount() == 0) {
+                    no_apps.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    no_apps.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(receiver, new IntentFilter("com.example.web2apk.ACTION_REFRESH"));
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Unregister the LocalBroadcastReceiver when the activity is destroyed
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        super.onDestroy();
     }
 }

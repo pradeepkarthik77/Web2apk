@@ -35,6 +35,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.github.pavlospt.roundedletterview.RoundedLetterView;
 import com.google.android.material.button.MaterialButton;
@@ -62,6 +63,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AddNewApp extends AppCompatActivity
 {
     ImageButton back_btn;
+
+    private DBHandler dbHandler;
 
     private TextInputLayout appname_input;
     private TextInputLayout applink_input;
@@ -312,6 +315,8 @@ public class AddNewApp extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addnewapp_layout);
 
+        this.dbHandler = new DBHandler(getApplicationContext());
+
         appname_input = findViewById(R.id.appname_input);
 
         applink_input = findViewById(R.id.website_link_input);
@@ -509,7 +514,6 @@ public class AddNewApp extends AppCompatActivity
 
                                 if (response.isSuccessful()) {
                                     if (response.code() == 200) {
-                                        String apkLink = "";
 
                                         ApkResponse apkResponse = response.body();
 
@@ -517,9 +521,15 @@ public class AddNewApp extends AppCompatActivity
                                             @Override
                                             public void run() {
                                                 Toast.makeText(context, "App Created Successfully!!!", Toast.LENGTH_LONG).show();
+                                                dbHandler.insertDB(apkResponse.getAppName(),apkResponse.getAPK());
+
+                                                // Trigger the refresh when needed
+                                                Intent newintent = new Intent("com.example.web2apk.ACTION_REFRESH");
+                                                LocalBroadcastManager.getInstance(context).sendBroadcast(newintent);
 
                                                 Intent intent = new Intent(context, QRCodeActivity.class);
                                                 intent.putExtra("APK_LINK", apkResponse.getAPK());
+                                                intent.putExtra("APP_NAME", apkResponse.getAppName());
                                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                                 startActivity(intent);
                                                 finish();
@@ -532,7 +542,7 @@ public class AddNewApp extends AppCompatActivity
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Toast.makeText(context, "An App already exist with that name. Try another AppName to avoid conflicts", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(context, "An App already exist with that name in the website. Try another AppName to avoid conflicts", Toast.LENGTH_LONG).show();
                                             }
                                         });
                                     }
