@@ -10,7 +10,7 @@ const MongoClient = require('mongodb').MongoClient
 
 const app = express();
 
-const url = secrets.mongo_local ;  
+const url = secrets.mongodb_url ;  
 const client = new MongoClient(url);
 const database = client.db("web2apk");
 const ApkList = database.collection("AppList");
@@ -18,17 +18,20 @@ const ApkList = database.collection("AppList");
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(express.json());
+// const projectPath = "/home/pradeep/AndroidStudioProjects/webviewapk";
 
-const appicon_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/src/main/res/drawable/app_icon.png";
-const MainActivity_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/src/main/java/com/example/webviewapk/MainActivity.java";
-const splash_fragment_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/src/main/java/com/example/webviewapk/splash_fragment.java";
-const gradle_build_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/build.gradle.kts";
-const projectPath = "/home/pradeep/AndroidStudioProjects/webviewapk";
-const manifest_file_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/src/main/AndroidManifest.xml";
-const strings_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/src/main/res/values/strings.xml";
-const colors_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/src/main/res/values/colors.xml";
-// const apk_files_store = "/home/pradeep/Downloads/Web2APK_collection"
-const apk_path = "/home/pradeep/AndroidStudioProjects/webviewapk/app/build/outputs/apk/debug/app-debug.apk"
+const projectPath = "/home/pradeepkarthikm/Web2apk";
+
+const appicon_path = path.join(projectPath, "app/src/main/res/drawable/app_icon.png");
+const MainActivity_path = path.join(projectPath, "app/src/main/java/com/example/webviewapk/MainActivity.java");
+const splash_fragment_path = path.join(projectPath, "app/src/main/java/com/example/webviewapk/splash_fragment.java");
+const gradle_build_path = path.join(projectPath, "app/build.gradle.kts");
+const manifest_file_path = path.join(projectPath, "app/src/main/AndroidManifest.xml");
+const strings_path = path.join(projectPath, "app/src/main/res/values/strings.xml");
+const colors_path = path.join(projectPath, "app/src/main/res/values/colors.xml");
+// const apk_files_store = path.join(projectPath, "Downloads/Web2APK_collection")
+const apk_path = path.join(projectPath, "app/build/outputs/apk/debug/app-debug.apk");
+
 
 async function makeRequest(config) {
     try {
