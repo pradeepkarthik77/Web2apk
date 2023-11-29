@@ -20,7 +20,7 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(express.json());
 // const projectPath = "/home/pradeep/AndroidStudioProjects/webviewapk";
 
-const projectPath = "/home/pradeepkarthikm/Web2apk";
+const projectPath = "/home/pradeepkarthikm/WebView_Wrapper";
 
 const appicon_path = path.join(projectPath, "app/src/main/res/drawable/app_icon.png");
 const MainActivity_path = path.join(projectPath, "app/src/main/java/com/example/webviewapk/MainActivity.java");
@@ -73,7 +73,7 @@ async function replaceFirstLineAsync(filename, newFirstLine) {
     };
 
     await makeRequest(config);
-}
+}   
     
 app.post("/create_app", async (req, res) => {
     try {
